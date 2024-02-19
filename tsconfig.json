@@ -16,7 +16,8 @@
     "forceConsistentCasingInFileNames": true   // Disallow inconsistently-cased references to the same file
   },
   "include": [
-    "src/**/*" // Include all files in src directory
+    "src/**/*", // Include all files in src directory
+    "index.ts"  // Include index.ts
   ],
   "exclude": [
     "node_modules", // Exclude the node_modules directory
