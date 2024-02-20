@@ -1,18 +1,37 @@
 export const cmdTypes = ['reg', 'update_winners']
-import { randomUUID } from "crypto";
 import { type WebSocket } from "ws";
+import { save, all } from "../models/player";
 
-const players = [];
+
+const winners: { name: string, wins: number }[] = [];
 
 export const cmds = {
-  reg: (ws: WebSocket, data: Record<string, any>) => {
-    players.push({ ...data.data, id: randomUUID()});
+  reg: (ws: WebSocket, data: Record<string, any> & { name: string, ws: WebSocket }) => {
+    delete data.password;
 
-    delete data.data.password;
-    data.index = players.length - 1;
+    save({ ...data, ws });
+
+    winners.push({ name: data.name, wins: 0 });
+
+    cmds.update_winners();
+
     data.error = false;
     data.errorText = '';
 
-    ws.send(JSON.stringify(data));
+    ws.send(JSON.stringify({
+      type: 'reg',
+      id: 0,
+      data: JSON.stringify(data)
+    }));
   },
+
+  update_winners: () => {
+    all().forEach((player) => {
+      player.ws.send(JSON.stringify({
+        type: 'update_winners',
+        id: 0,
+        data: JSON.stringify(winners)
+      }))
+    })
+  }
 }
