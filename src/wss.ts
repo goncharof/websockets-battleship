@@ -11,11 +11,11 @@ wss.on("connection", (ws: WebSocket) => {
   ws.on("message", function incoming(message: string) {
     console.log("received: %s", message);
 
-    const data: { type: keyof typeof playerCmds } = JSON.parse(message);
+    const data: { type: keyof typeof playerCmds, data: string } = JSON.parse(message);
 
     switch(true) {
       case playerCmdTypes.includes(data.type):
-        playerCmds[data.type].call(undefined, ws, data);
+        playerCmds[data.type].call(undefined, ws, JSON.parse(data.data));
         break;
     }
   });
