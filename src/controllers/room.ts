@@ -8,8 +8,8 @@ export enum TYPES {
 }
 
 export const create_room = (ws: ExtWebSocket) => {
-  const { indexRoom } = create();
-  add_user_to_room(ws.playerId, indexRoom);
+  const { roomId } = create();
+  add_user_to_room(ws.playerId, roomId);
 };
 export const add_user_to_room = (index: number, indexRoom: number) => {
   add_player(get(index), indexRoom);

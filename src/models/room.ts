@@ -1,10 +1,11 @@
 import { dbRoom } from "../database/db";
-import { Player } from "./player";
+import { Player, get } from "./player";
+import { create as createGame } from "./game";
 
-let indexRoom = 0;
+let roomId = 0;
 
 export interface Room {
-  indexRoom: number;
+  roomId: number;
   roomUsers: {
     index: number;
     name: string;
@@ -12,8 +13,8 @@ export interface Room {
 }
 
 export const create = (): Room => {
-  return (dbRoom[++indexRoom] = {
-    indexRoom,
+  return (dbRoom[++roomId] = {
+    roomId,
     roomUsers: [],
   });
 };
@@ -29,12 +30,31 @@ export const add_player = (player: Player, indexRoom: number) => {
     index: player.index,
     name: player.name,
   });
+
+  if (dbRoom[indexRoom].roomUsers.length === 2) {
+    const game = createGame(
+      dbRoom[indexRoom].roomUsers.map((user) => user.index),
+    );
+
+    dbRoom[indexRoom].roomUsers.forEach((user) => {
+      get(user.index).ws.send(
+        JSON.stringify({
+          type: "create_game",
+          data: JSON.stringify({
+            idGame: game.id,
+            idPlayer: user.index,
+          }),
+          id: 0,
+        }),
+      );
+    });
+  }
 };
 
 export const all = () => {
   Object.values(dbRoom).forEach((room) => {
     if (room.roomUsers.length === 0) {
-      delete dbRoom[room.indexRoom];
+      delete dbRoom[room.roomId];
     }
   });
 
