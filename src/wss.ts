@@ -1,6 +1,10 @@
 import { WebSocketServer, type WebSocket } from "ws";
 import { reg, TYPES as PlayerTypes } from "./controllers/player";
-import { TYPES as RoomTypes, create_room } from "./controllers/room";
+import {
+  TYPES as RoomTypes,
+  add_user_to_room,
+  create_room,
+} from "./controllers/room";
 
 export interface ExtWebSocket extends WebSocket {
   playerId: number;
@@ -27,6 +31,7 @@ wss.on("connection", (ws: ExtWebSocket) => {
             create_room(ws);
             break;
           case RoomTypes.AddUserToRoom:
+            add_user_to_room(ws.playerId, JSON.parse(data.data).indexRoom);
             break;
           default:
             console.log(`Unknown command type: ${data.type}`);
