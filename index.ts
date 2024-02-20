@@ -1,5 +1,5 @@
 import { httpServer } from "./src/http_server/index.js";
-import "./src/http_server/wss.ts";
+import "./src/wss.js";
 
 const HTTP_PORT = 8181;
 
