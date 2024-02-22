@@ -19,3 +19,5 @@ export const addShips = (
   dbGames[data.gameId].ships[playerId] = data.ships;
   return dbGames[data.gameId];
 };
+
+export const get = (id: number) => dbGames[id];

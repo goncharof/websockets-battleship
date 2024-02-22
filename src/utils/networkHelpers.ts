@@ -8,6 +8,7 @@ export enum WsMsgTypes {
   UpdateWinners = "update_winners",
   UpdateRoom = "update_room",
   CreateGame = "create_game",
+  Turn = "turn",
 }
 
 export const sendWsMessage = (
