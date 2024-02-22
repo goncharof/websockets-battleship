@@ -1,5 +1,6 @@
 import { addShips } from "../models/game";
 import { get } from "../models/player";
+import { WsMsgTypes, sendWsMessage } from "../utils/networkHelpers";
 
 export enum TYPES {
   AddShips = "add_ships",
@@ -14,16 +15,10 @@ export const add_ships = (data: {
 
   if (Object.keys(game.ships).length === game.playerIds.length) {
     Object.keys(game.ships).forEach((playerId) => {
-      get(Number.parseInt(playerId)).ws.send(
-        JSON.stringify({
-          type: "start_game",
-          data: JSON.stringify({
-            ships: data.ships,
-            currentPlayerIndex: Number.parseInt(playerId),
-          }),
-          id: 0,
-        }),
-      );
+      sendWsMessage(get(Number.parseInt(playerId)).ws, WsMsgTypes.StartGame, {
+        ships: data.ships,
+        currentPlayerIndex: Number.parseInt(playerId),
+      });
     });
   }
 };

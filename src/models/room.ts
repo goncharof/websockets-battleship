@@ -1,6 +1,5 @@
 import { dbRoom } from "../database/db";
-import { Player, get } from "./player";
-import { create as createGame } from "./game";
+import { Player } from "./player";
 
 let roomId = 0;
 
@@ -19,7 +18,7 @@ export const create = (): Room => {
   });
 };
 
-export const add_player = (player: Player, indexRoom: number) => {
+export const add_player = (player: Player, indexRoom: number): Room => {
   Object.values(dbRoom).forEach((room) => {
     room.roomUsers = room.roomUsers.filter(
       (user) => user.index !== player.index,
@@ -31,24 +30,7 @@ export const add_player = (player: Player, indexRoom: number) => {
     name: player.name,
   });
 
-  if (dbRoom[indexRoom].roomUsers.length === 2) {
-    const game = createGame(
-      dbRoom[indexRoom].roomUsers.map((user) => user.index),
-    );
-
-    dbRoom[indexRoom].roomUsers.forEach((user) => {
-      get(user.index).ws.send(
-        JSON.stringify({
-          type: "create_game",
-          data: JSON.stringify({
-            idGame: game.id,
-            idPlayer: user.index,
-          }),
-          id: 0,
-        }),
-      );
-    });
-  }
+  return dbRoom[indexRoom];
 };
 
 export const all = () => {

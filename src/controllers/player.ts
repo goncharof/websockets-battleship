@@ -1,12 +1,13 @@
 export const cmdTypes = ["reg"];
 import { save, all } from "../models/player";
+import { WsMsgTypes, sendWsMessage } from "../utils/networkHelpers";
 import { ExtWebSocket } from "../wss";
 import { update_room } from "./room";
 
 const winners: { name: string; wins: number }[] = [];
 
 export enum TYPES {
-  Reg = "reg",
+  Reg = WsMsgTypes.Reg,
 }
 
 export const reg = (
@@ -26,25 +27,13 @@ export const reg = (
   data.error = false;
   data.errorText = "";
 
-  ws.send(
-    JSON.stringify({
-      type: "reg",
-      id: 0,
-      data: JSON.stringify(data),
-    }),
-  );
+  sendWsMessage(ws, WsMsgTypes.Reg, data);
 
   update_room();
 };
 
 const update_winners = () => {
   all().forEach((player) => {
-    player.ws.send(
-      JSON.stringify({
-        type: "update_winners",
-        id: 0,
-        data: JSON.stringify(winners),
-      }),
-    );
+    sendWsMessage(player.ws, WsMsgTypes.UpdateWinners, winners);
   });
 };
