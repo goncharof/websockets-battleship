@@ -74,13 +74,84 @@ const attackResult = (ships: Ship[], shotX: number, shotY: number) => {
         ship.hits.push({ x: shotX, y: shotY });
 
         if (ship.hits.length === length) {
-          return AttackResults.Killed;
+          return [
+            { status: AttackResults.Killed, point: { x: shotX, y: shotY } },
+            ...getSurroundingPointsForShip(ship),
+          ];
         } else {
-          return AttackResults.Shot;
+          return [
+            {
+              status: AttackResults.Shot,
+              point: { x: shotX, y: shotY },
+            },
+          ];
         }
       }
     }
   }
 
-  return AttackResults.Miss;
+  return [
+    {
+      status: AttackResults.Miss,
+      point: { x: shotX, y: shotY },
+    },
+  ];
 };
+
+function getSurroundingPointsForShip(ship: Ship) {
+  const surroundingPoints: {
+    status: AttackResults.Miss;
+    point: { x: number; y: number };
+  }[] = [];
+
+  for (let i = 0; i < ship.length; i++) {
+    // Calculate the positions based on the direction of the ship
+    const posX = ship.position.x + (ship.direction ? i : 0);
+    const posY = ship.position.y + (ship.direction ? 0 : i);
+
+    // Get all surrounding points for this segment of the ship
+    const deltas = [
+      { dx: -1, dy: 0 }, // left
+      { dx: 1, dy: 0 }, // right
+      { dx: 0, dy: -1 }, // top
+      { dx: 0, dy: 1 }, // bottom
+      { dx: -1, dy: -1 }, // top-left
+      { dx: 1, dy: -1 }, // top-right
+      { dx: -1, dy: 1 }, // bottom-left
+      { dx: 1, dy: 1 }, // bottom-right
+    ];
+
+    deltas.forEach((delta) => {
+      const x = posX + delta.dx;
+      const y = posY + delta.dy;
+      // Check if the new coordinates are inside the board
+      if (x >= 0 && y < 10 && y >= 0 && x < 10) {
+        surroundingPoints.push({ status: AttackResults.Miss, point: { x, y } });
+      }
+    });
+  }
+
+  const bowAndSternDeltas = ship.direction
+    ? [
+        { dx: -1, dy: 0 },
+        { dx: ship.length, dy: 0 },
+      ]
+    : [
+        { dx: 0, dy: -1 },
+        { dx: 0, dy: ship.length },
+      ];
+
+  bowAndSternDeltas.forEach((delta) => {
+    const x = ship.position.x + delta.dx;
+    const y = ship.position.y + delta.dy;
+    // Check if the new coordinates are inside the board
+    if (x >= 0 && x < 10 && y >= 0 && y < 10) {
+      surroundingPoints.push({
+        status: AttackResults.Miss,
+        point: { x, y },
+      });
+    }
+  });
+
+  return surroundingPoints;
+}

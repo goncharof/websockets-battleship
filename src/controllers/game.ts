@@ -52,9 +52,9 @@ export const onAttack = ({
 }) => {
   console.log("onAttack", { gameId, indexPlayer, x, y });
 
-  const { attacks } = get(gameId);
+  const game = get(gameId);
 
-  const playerAttacks = attacks[indexPlayer];
+  const playerAttacks = game.attacks[indexPlayer];
 
   if (Number.isNaN(x) || Number.isNaN(y)) {
     while (true) {
@@ -66,5 +66,15 @@ export const onAttack = ({
     }
   }
 
-  console.log(attack(gameId, indexPlayer, x!, y!));
+  const results = attack(gameId, indexPlayer, x!, y!);
+
+  results.forEach((result) => {
+    game.playerIds.forEach((playerId) => {
+      sendWsMessage(getPlayer(playerId).ws, WsMsgTypes.Attack, {
+        position: result.point,
+        status: result.status,
+        playerId: playerId, // TODO which id ?
+      });
+    });
+  });
 };
