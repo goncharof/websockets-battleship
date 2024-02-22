@@ -1,6 +1,6 @@
 import { WebSocketServer, type WebSocket } from "ws";
 import { reg, TYPES as PlayerTypes } from "./controllers/player";
-import { TYPES as GameTypes, add_ships } from "./controllers/game";
+import { TYPES as GameTypes, add_ships, onAttack } from "./controllers/game";
 import {
   TYPES as RoomTypes,
   add_user_to_room,
@@ -18,7 +18,7 @@ wss.on("connection", (ws: ExtWebSocket) => {
 
   // Listen for messages from clients
   ws.on("message", function incoming(message: string) {
-    console.log("received: %s", message);
+    // console.log("received: %s", message);
 
     const data: { type: string; data: string } = JSON.parse(message);
 
@@ -42,6 +42,10 @@ wss.on("connection", (ws: ExtWebSocket) => {
         switch (data.type) {
           case GameTypes.AddShips:
             add_ships(JSON.parse(data.data));
+            break;
+          case GameTypes.Attack:
+          case GameTypes.RandomAttack:
+            onAttack(JSON.parse(data.data));
             break;
           default:
             console.log(`Unknown command type: ${data.type}`);
