@@ -38,16 +38,16 @@ export const attack = (
   x: number,
   y: number,
 ) => {
-  const position = { x, y };
-
-  dbGames[gameId].attacks[playerId].push(position);
   const opponentId = dbGames[gameId].playerIds.find((id) => id !== playerId)!;
 
-  return attackResult(
-    dbGames[gameId].ships[opponentId],
-    position.x,
-    position.y,
-  );
+  const results = attackResult(
+    dbGames[gameId].ships[opponentId], x, y);
+
+  results.forEach(result => {
+    dbGames[gameId].attacks[playerId].push(result.point);  
+  });
+
+  return results
 };
 
 export const nextPlayer = (gameId: number) => {
