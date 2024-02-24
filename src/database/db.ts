@@ -23,6 +23,7 @@ export const dbGames: Record<
     playerIds: number[];
     ships: Record<number, Ship[]>;
     attacks: Record<number, { x: number; y: number }[]>;
+    currentPlayer: number;
   }
 > = {};
 

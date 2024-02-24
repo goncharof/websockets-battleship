@@ -16,6 +16,7 @@ export const create = (playerIds: number[]) => {
     playerIds,
     ships: { [id1]: [], [id2]: [] },
     attacks: { [id1]: [], [id2]: [] },
+    currentPlayer: id1,
   };
 
   return dbGames[id];
@@ -48,6 +49,18 @@ export const attack = (
     position.y,
   );
 };
+
+export const nextPlayer = (gameId: number) => {
+  const game = get(gameId);
+  dbGames[id].currentPlayer = game.playerIds.find(
+    (id) => id !== game.currentPlayer,
+  )!
+
+  console.log(game.currentPlayer, 'current player');
+  
+
+  return game.currentPlayer
+}
 
 const attackResult = (ships: Ship[], shotX: number, shotY: number) => {
   console.table(ships);

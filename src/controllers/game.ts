@@ -1,4 +1,4 @@
-import { addShips, attack, get } from "../models/game";
+import { addShips, attack, get, nextPlayer } from "../models/game";
 import { get as getPlayer } from "../models/player";
 import { WsMsgTypes, sendWsMessage } from "../utils/networkHelpers";
 
@@ -27,14 +27,14 @@ export const add_ships = (data: {
       );
     });
 
-    turn(game.id, game.playerIds[0]);
+    turn(game.id);
   }
 };
 
-export const turn = (gameId: number, currentPlayer: number) => {
-  const game = get(gameId);
+export const turn = (gameId: number) => {
+  const { playerIds, currentPlayer } = get(gameId);
 
-  game.playerIds.forEach((playerId) => {
+  playerIds.forEach((playerId) => {
     sendWsMessage(getPlayer(playerId).ws, WsMsgTypes.Turn, { currentPlayer });
   });
 };
@@ -70,11 +70,17 @@ export const onAttack = ({
 
   results.forEach((result) => {
     game.playerIds.forEach((playerId) => {
+      console.log('currentplayerId!!!!!', game.currentPlayer);
+      
       sendWsMessage(getPlayer(playerId).ws, WsMsgTypes.Attack, {
         position: result.point,
         status: result.status,
-        playerId: playerId, // TODO which id ?
+        currentPlayer: game.currentPlayer,
       });
     });
   });
+
+  nextPlayer(gameId);
+
+  turn(gameId);
 };
