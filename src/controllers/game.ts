@@ -1,4 +1,4 @@
-import { addShips, attack, get, nextPlayer } from "../models/game";
+import { AttackResults, addShips, attack, get, nextPlayer } from "../models/game";
 import { get as getPlayer } from "../models/player";
 import { WsMsgTypes, sendWsMessage } from "../utils/networkHelpers";
 
@@ -17,6 +17,8 @@ export const add_ships = (data: {
 
   if (Object.keys(game.ships).length === game.playerIds.length) {
     Object.keys(game.ships).forEach((playerId) => {
+      console.log(playerId);
+      
       sendWsMessage(
         getPlayer(Number.parseInt(playerId)).ws,
         WsMsgTypes.StartGame,
@@ -51,6 +53,8 @@ export const onAttack = ({
   y?: number;
 }) => {
   const game = get(gameId);
+
+  if (game.currentPlayer !== indexPlayer) return;
 
   const playerAttacks = game.attacks[indexPlayer];
 
@@ -87,7 +91,9 @@ export const onAttack = ({
     });
   });
 
-  nextPlayer(gameId);
+  if(results.some((result) => result.status !== AttackResults.Miss)) {
+    nextPlayer(gameId);  
+  }
 
   turn(gameId);
 };
