@@ -50,16 +50,23 @@ export const onAttack = ({
   x?: number;
   y?: number;
 }) => {
-  console.log("onAttack", { gameId, indexPlayer, x, y });
-
   const game = get(gameId);
 
   const playerAttacks = game.attacks[indexPlayer];
 
-  if (Number.isNaN(x) || Number.isNaN(y)) {
+  console.log('onattack');
+  
+  console.log(x)
+  console.log(Number.isNaN(x))
+
+  console.log('onattack');
+  
+
+  if (isNaN(x!) || isNaN(y!)) {
     while (true) {
       x = Math.floor(Math.random() * 10);
       y = Math.floor(Math.random() * 10);
+      console.log("onAttack", { gameId, indexPlayer, x, y });
       if (!playerAttacks.some((pos) => pos.x === x && pos.y === y)) {
         break;
       }
