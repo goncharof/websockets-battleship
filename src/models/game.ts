@@ -14,7 +14,7 @@ export const create = (playerIds: number[]) => {
   dbGames[++id] = {
     id,
     playerIds,
-    ships: { [id1]: [], [id2]: [] },
+    ships: {},
     attacks: { [id1]: [], [id2]: [] },
     currentPlayer: id1,
   };
@@ -56,16 +56,10 @@ export const nextPlayer = (gameId: number) => {
     (id) => id !== game.currentPlayer,
   )!
 
-  console.log(game.currentPlayer, 'current player');
-  
-
   return game.currentPlayer
 }
 
 const attackResult = (ships: Ship[], shotX: number, shotY: number) => {
-  console.table(ships);
-  console.log(shotX, shotY);
-
   for (let i = 0; i < ships.length; i++) {
     const ship = ships[i];
     const { position, direction, length } = ship;
@@ -87,6 +81,11 @@ const attackResult = (ships: Ship[], shotX: number, shotY: number) => {
         ship.hits.push({ x: shotX, y: shotY });
 
         if (ship.hits.length === length) {
+
+          if(ships.every((ship) => ship.hits?.length === ship.length)) {
+            console.log("all ships are destroyed");
+          }
+        
           return [
             { status: AttackResults.Killed, point: { x: shotX, y: shotY } },
             ...getSurroundingPointsForShip(ship),
@@ -112,59 +111,73 @@ const attackResult = (ships: Ship[], shotX: number, shotY: number) => {
 };
 
 function getSurroundingPointsForShip(ship: Ship) {
-  const surroundingPoints: {
-    status: AttackResults.Miss;
-    point: { x: number; y: number };
-  }[] = [];
+  const surroundingPoints: { status: AttackResults.Miss; point: { x: number; y: number }; }[] = [];
 
+  // Define horizontal and vertical offsets for adjacent points
+  const adjacentOffsets = [
+    { dx: -1, dy: 0 }, // left
+    { dx: 1, dy: 0 }, // right
+    { dx: 0, dy: -1 }, // top
+    { dx: 0, dy: 1 }, // bottom
+  ];
+
+  // Iterate over the length of the ship to get the adjacent points
   for (let i = 0; i < ship.length; i++) {
-    // Calculate the positions based on the direction of the ship
-    const posX = ship.position.x + (ship.direction ? i : 0);
-    const posY = ship.position.y + (ship.direction ? 0 : i);
+    // Calculate the current segment position based on direction
+    const posX = ship.position.x + (ship.direction ? 0 : i);
+    const posY = ship.position.y + (ship.direction ? i : 0);
 
-    // Get all surrounding points for this segment of the ship
-    const deltas = [
-      { dx: -1, dy: 0 }, // left
-      { dx: 1, dy: 0 }, // right
-      { dx: 0, dy: -1 }, // top
-      { dx: 0, dy: 1 }, // bottom
-      { dx: -1, dy: -1 }, // top-left
-      { dx: 1, dy: -1 }, // top-right
-      { dx: -1, dy: 1 }, // bottom-left
-      { dx: 1, dy: 1 }, // bottom-right
-    ];
-
-    deltas.forEach((delta) => {
-      const x = posX + delta.dx;
-      const y = posY + delta.dy;
-      // Check if the new coordinates are inside the board
-      if (x >= 0 && y < 10 && y >= 0 && x < 10) {
-        surroundingPoints.push({ status: AttackResults.Miss, point: { x, y } });
+    // Get adjacent points for the current segment
+    adjacentOffsets.forEach((offset) => {
+      const adjacentPoint = { x: posX + offset.dx, y: posY + offset.dy };
+      // Check if the adjacent point is inside the board boundaries
+      if (adjacentPoint.x >= 0 && adjacentPoint.x < 10 && adjacentPoint.y >= 0 && adjacentPoint.y < 10) {
+        // Prevent duplicates by checking if the point is already in the array
+        if (!surroundingPoints.some(point => point.point.x === adjacentPoint.x && point.point.y === adjacentPoint.y)) {
+          surroundingPoints.push({ status: AttackResults.Miss, point: adjacentPoint });
+        }
       }
     });
   }
 
-  const bowAndSternDeltas = ship.direction
-    ? [
-        { dx: -1, dy: 0 },
-        { dx: ship.length, dy: 0 },
-      ]
-    : [
-        { dx: 0, dy: -1 },
-        { dx: 0, dy: ship.length },
-      ];
+  // Get the bow and stern positions for the adjacent points
+  const bowAndSternOffsets = ship.direction
+    ? [{ dx: 0, dy: -1 }, { dx: 0, dy: ship.length }] // Vertical
+    : [{ dx: -1, dy: 0 }, { dx: ship.length, dy: 0 }]; // Horizontal
 
-  bowAndSternDeltas.forEach((delta) => {
-    const x = ship.position.x + delta.dx;
-    const y = ship.position.y + delta.dy;
-    // Check if the new coordinates are inside the board
-    if (x >= 0 && x < 10 && y >= 0 && y < 10) {
-      surroundingPoints.push({
-        status: AttackResults.Miss,
-        point: { x, y },
-      });
+  bowAndSternOffsets.forEach((offset) => {
+    const bowOrSternPoint = { x: ship.position.x + offset.dx, y: ship.position.y + offset.dy };
+    // Check if the point is inside the board boundaries
+    if (bowOrSternPoint.x >= 0 && bowOrSternPoint.x < 10 && bowOrSternPoint.y >= 0 && bowOrSternPoint.y < 10) {
+      // Prevent duplicates by checking if the point is already in the array
+      if (!surroundingPoints.some(point => point.point.x === bowOrSternPoint.x && point.point.y === bowOrSternPoint.y)) {
+        surroundingPoints.push({ status: AttackResults.Miss, point: bowOrSternPoint });
+      }
     }
   });
 
   return surroundingPoints;
 }
+
+// function isShipDestroyed(ship: Ship): boolean {
+//   if (!ship.hits || ship.hits.length < ship.length) {
+//     return false;
+//   }
+
+//   // Check if all possible positions of the ship have been hit
+//   const shipPoints = new Set<string>();
+//   for (let i = 0; i < ship.length; i++) {
+//     const point = ship.direction
+//       ? `${ship.position.x}:${ship.position.y + i}`
+//       : `${ship.position.x + i}:${ship.position.y}`;
+//     shipPoints.add(point);
+//   }
+
+//   // Check if all points are in the hits array
+//   for (const hit of ship.hits) {
+//     shipPoints.delete(`${hit.x}:${hit.y}`);
+//   }
+
+//   // If all points are hit, shipPoints set should be empty
+//   return shipPoints.size === 0;
+// }

@@ -17,8 +17,6 @@ export const add_ships = (data: {
 
   if (Object.keys(game.ships).length === game.playerIds.length) {
     Object.keys(game.ships).forEach((playerId) => {
-      console.log(playerId);
-      
       sendWsMessage(
         getPlayer(Number.parseInt(playerId)).ws,
         WsMsgTypes.StartGame,
@@ -58,19 +56,10 @@ export const onAttack = ({
 
   const playerAttacks = game.attacks[indexPlayer];
 
-  console.log('onattack');
-  
-  console.log(x)
-  console.log(Number.isNaN(x))
-
-  console.log('onattack');
-  
-
   if (isNaN(x!) || isNaN(y!)) {
     while (true) {
       x = Math.floor(Math.random() * 10);
       y = Math.floor(Math.random() * 10);
-      console.log("onAttack", { gameId, indexPlayer, x, y });
       if (!playerAttacks.some((pos) => pos.x === x && pos.y === y)) {
         break;
       }
@@ -91,7 +80,12 @@ export const onAttack = ({
     });
   });
 
-  if(results.some((result) => result.status !== AttackResults.Miss)) {
+  console.log(results, 'results');
+  console.log(results.some((result) => result.status !== AttackResults.Miss));
+  
+  
+
+  if(results.every((result) => result.status === AttackResults.Miss)) {
     nextPlayer(gameId);  
   }
 
