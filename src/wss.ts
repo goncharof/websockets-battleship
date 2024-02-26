@@ -13,6 +13,10 @@ export interface ExtWebSocket extends WebSocket {
 
 export const wss = new WebSocketServer({ port: 3000 });
 
+wss.on("listening", () => {
+  console.log("WebSocket server is running on ws://localhost:3000");
+});
+
 wss.on("connection", (ws: ExtWebSocket) => {
   console.log("Client connected");
 
@@ -32,7 +36,7 @@ wss.on("connection", (ws: ExtWebSocket) => {
             add_user_to_room(ws.playerId, JSON.parse(data.data).indexRoom);
             break;
           default:
-            console.log(`Unknown command type: ${data.type}`);
+            unknownCommandDetected(data.type);
         }
         break;
       case (Object.values(GameTypes) as string[]).includes(data.type):
@@ -45,15 +49,16 @@ wss.on("connection", (ws: ExtWebSocket) => {
             onAttack(JSON.parse(data.data));
             break;
           default:
-            console.log(`Unknown command type: ${data.type}`);
+            unknownCommandDetected(data.type);
         }
         break;
       default:
-        console.log(`Unknown command type: ${data.type}`);
+        unknownCommandDetected(data.type);
     }
   });
 
   ws.on("close", () => onDisconnect(ws.playerId));
 });
 
-console.log("WebSocket server is running on ws://localhost:3000");
+const unknownCommandDetected = (type: string) =>
+  console.log(`Unknown command type: ${type}`);
