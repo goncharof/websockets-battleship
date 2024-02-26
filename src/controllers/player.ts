@@ -61,4 +61,6 @@ export const onDisconnect = (playerId?: number) => {
   onDisconnectFromGames(playerId);
   onUpdateRoom();
   onUpdateWinners();
+
+  console.log(`Player ${playerId} disconnected and rooms/games updated`);
 };
