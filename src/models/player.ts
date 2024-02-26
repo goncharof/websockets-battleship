@@ -16,6 +16,10 @@ export const save = (data: {
   ws: ExtWebSocket;
   wins: number;
 }) => {
+  if (all().some((player) => player.name === data.name)) {
+    throw new Error(`Player ${data.name} already exists`);
+  }
+
   return (dbPlayer[++id] = { ...data, index: id });
 };
 

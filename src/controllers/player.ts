@@ -12,20 +12,27 @@ export const reg = (
   ws: ExtWebSocket,
   data: Record<string, unknown> & { name: string },
 ) => {
-  delete data.password;
+  try {
+    const player = save({ ...data, ws, wins: 0 });
+    ws.playerId = player.index;
+    update_winners();
 
-  const player = save({ ...data, ws, wins: 0 });
+    sendWsMessage(ws, WsMsgTypes.Reg, {
+      name: player.name,
+      index: player.index,
+      error: false,
+      errorText: "",
+    });
 
-  ws.playerId = player.index;
-
-  update_winners();
-
-  data.error = false;
-  data.errorText = "";
-
-  sendWsMessage(ws, WsMsgTypes.Reg, data);
-
-  update_room();
+    update_room();
+  } catch (error: unknown) {
+    sendWsMessage(ws, WsMsgTypes.Reg, {
+      name: "",
+      index: 0,
+      error: true,
+      errorText: (error as Error).message,
+    });
+  }
 };
 
 export const update_winners = (winnerId?: number) => {
