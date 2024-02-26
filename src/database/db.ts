@@ -1,5 +1,6 @@
 import { type Player } from "../models/player";
 import { Room } from "../models/room";
+import { ExtWebSocket } from "../wss";
 
 export interface Point {
   x: number;
@@ -13,7 +14,14 @@ export interface Ship {
   hits?: Point[];
 }
 
-export const dbPlayer: Record<number, Player> = {};
+export const dbPlayer: Record<number, Player> = {
+  "-1": {
+    index: -1,
+    name: "bot",
+    ws: { send: () => {} } as unknown as ExtWebSocket,
+    wins: 0,
+  },
+};
 export const dbRoom: Record<number, Room> = {};
 export const dbGames: Record<
   number,
@@ -23,6 +31,7 @@ export const dbGames: Record<
     ships: Record<number, Ship[]>;
     attacks: Record<number, { x: number; y: number }[]>;
     currentPlayer: number;
+    bot: boolean;
   }
 > = {};
 

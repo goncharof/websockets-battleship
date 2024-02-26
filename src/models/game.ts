@@ -22,7 +22,7 @@ export const disconect = (index: number) => {
   return winPlayer;
 };
 
-export const create = (playerIds: number[]) => {
+export const create = (playerIds: number[], bot = false) => {
   const [id1, id2] = playerIds;
 
   dbGames[++id] = {
@@ -31,6 +31,7 @@ export const create = (playerIds: number[]) => {
     ships: {},
     attacks: { [id1]: [], [id2]: [] },
     currentPlayer: id1,
+    bot,
   };
 
   return dbGames[id];

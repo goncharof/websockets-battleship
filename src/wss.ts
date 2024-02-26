@@ -1,4 +1,5 @@
 import { WebSocketServer, WebSocket } from "ws";
+import { TYPES as BotTypes, start } from "./controllers/bot";
 import {
   onReg,
   TYPES as PlayerTypes,
@@ -30,6 +31,9 @@ wss.on("connection", (ws: ExtWebSocket) => {
     console.log(`server received command with type: ${data.type}`);
 
     switch (true) {
+      case (Object.values(BotTypes) as string[]).includes(data.type):
+        start(ws.playerId);
+        break;
       case (Object.values(PlayerTypes) as string[]).includes(data.type):
         onReg(ws, JSON.parse(data.data));
         break;

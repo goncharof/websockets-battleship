@@ -53,6 +53,12 @@ export const onTurn = (gameId: number) => {
   });
 
   console.log(`Player ${currentPlayer} turn`);
+
+  if (currentPlayer == -1) {
+    setTimeout(() => {
+      onAttack({ gameId, indexPlayer: -1 });
+    }, 1000);
+  }
 };
 
 export const onAttack = ({
@@ -62,13 +68,11 @@ export const onAttack = ({
   y,
 }: {
   gameId: number;
-  indexPlayer: number;
+  indexPlayer?: number;
 } & Partial<Point>) => {
   const game = get(gameId);
 
   if (game.currentPlayer !== indexPlayer) return;
-
-  console.log(`Player ${indexPlayer} attack x:${x} y:${y}`);
 
   const playerAttacks = game.attacks[indexPlayer];
 
@@ -81,6 +85,8 @@ export const onAttack = ({
       }
     }
   }
+
+  console.log(`Player ${indexPlayer} attack x:${x} y:${y}`);
 
   const results = attack(gameId, indexPlayer, x!, y!);
 
