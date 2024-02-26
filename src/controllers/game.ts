@@ -87,7 +87,7 @@ export const onAttack = ({
     });
   });
 
-  if (!results.some((result) => result.status === AttackResults.Finish)) {
+  if (results.some((result) => result.status === AttackResults.Finish)) {
     game.playerIds.forEach((playerId) => {
       sendWsMessage(getPlayer(playerId).ws, WsMsgTypes.Finish, {
         winPlayer: game.currentPlayer,
