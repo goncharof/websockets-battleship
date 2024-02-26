@@ -21,7 +21,12 @@ export enum TYPES {
 export const onAddShips = (data: {
   gameId: number;
   indexPlayer: number;
-  ships: [];
+  ships: {
+    position: Point;
+    direction: boolean;
+    type: string;
+    length: number;
+  }[];
 }) => {
   const game = addShips(data, data.indexPlayer);
 
