@@ -68,7 +68,7 @@ export const onAttack = ({
 
   if (game.currentPlayer !== indexPlayer) return;
 
-  console.log(`Player ${indexPlayer} attack ${x} ${y}`);
+  console.log(`Player ${indexPlayer} attack x:${x} y:${y}`);
 
   const playerAttacks = game.attacks[indexPlayer];
 
@@ -94,7 +94,7 @@ export const onAttack = ({
     });
   });
 
-  if (results.some((result) => result.status === AttackResults.Finish)) {
+  if (results.some((result) => result.finish)) {
     game.playerIds.forEach((playerId) => {
       sendWsMessage(getPlayer(playerId).ws, WsMsgTypes.Finish, {
         winPlayer: game.currentPlayer,

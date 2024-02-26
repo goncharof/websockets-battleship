@@ -6,7 +6,6 @@ export enum AttackResults {
   Miss = "miss",
   Killed = "killed",
   Shot = "shot",
-  Finish = "finish",
 }
 
 export const disconect = (index: number) => {
@@ -101,11 +100,13 @@ const attackResult = (ships: Ship[], x: number, y: number) => {
         if (ship.hits.length === length) {
           if (ships.every((ship) => ship.hits?.length === ship.length)) {
             console.log("all ships are destroyed!!!!");
-            return [{ status: AttackResults.Finish, point: { x, y } }];
+            return [
+              { status: AttackResults.Killed, point: { x, y }, finish: true },
+            ];
           }
 
           return [
-            { status: AttackResults.Killed, point: { x, y } },
+            { status: AttackResults.Killed, point: { x, y }, finish: false },
             ...getSurroundingPointsForShip(ship),
           ];
         } else {
@@ -113,6 +114,7 @@ const attackResult = (ships: Ship[], x: number, y: number) => {
             {
               status: AttackResults.Shot,
               point: { x, y },
+              finish: false,
             },
           ];
         }
@@ -124,6 +126,7 @@ const attackResult = (ships: Ship[], x: number, y: number) => {
     {
       status: AttackResults.Miss,
       point: { x, y },
+      finish: false,
     },
   ];
 };
@@ -132,6 +135,7 @@ const getSurroundingPointsForShip = (ship: Ship) => {
   const surroundingPoints: {
     status: AttackResults.Miss;
     point: Point;
+    finish: boolean;
   }[] = [];
 
   const adjacentOffsets = [
@@ -163,6 +167,7 @@ const getSurroundingPointsForShip = (ship: Ship) => {
           surroundingPoints.push({
             status: AttackResults.Miss,
             point: adjacentPoint,
+            finish: false,
           });
         }
       }
@@ -200,6 +205,7 @@ const getSurroundingPointsForShip = (ship: Ship) => {
         surroundingPoints.push({
           status: AttackResults.Miss,
           point: bowOrSternPoint,
+          finish: false,
         });
       }
     }
