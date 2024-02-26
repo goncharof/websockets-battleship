@@ -1,23 +1,22 @@
-export const cmdTypes = ["reg"];
 import { save, all, rm } from "../models/player";
 import { disconect as disconectFromRooms } from "../models/room";
 import { onPlayerDissconect as onDisconnectFromGames } from "../controllers/game";
 import { WsMsgTypes, sendWsMessage } from "../utils/networkHelpers";
 import { ExtWebSocket } from "../wss";
-import { update_room } from "./room";
+import { onUpdateRoom } from "./room";
 
 export enum TYPES {
   Reg = WsMsgTypes.Reg,
 }
 
-export const reg = (
+export const onReg = (
   ws: ExtWebSocket,
   data: Record<string, unknown> & { name: string },
 ) => {
   try {
     const player = save({ ...data, ws, wins: 0 });
     ws.playerId = player.index;
-    update_winners();
+    onUpdateWinners();
 
     sendWsMessage(ws, WsMsgTypes.Reg, {
       name: player.name,
@@ -26,7 +25,7 @@ export const reg = (
       errorText: "",
     });
 
-    update_room();
+    onUpdateRoom();
 
     console.log(`Player ${player.name} registrated and rooms updated`);
   } catch (error: unknown) {
@@ -41,7 +40,7 @@ export const reg = (
   }
 };
 
-export const update_winners = (winnerId?: number) => {
+export const onUpdateWinners = (winnerId?: number) => {
   const players = all();
 
   if (winnerId) players.find((player) => player.index === winnerId)!.wins++;
@@ -60,6 +59,6 @@ export const onDisconnect = (playerId?: number) => {
   rm(playerId);
   disconectFromRooms(playerId);
   onDisconnectFromGames(playerId);
-  update_room();
-  update_winners();
+  onUpdateRoom();
+  onUpdateWinners();
 };

@@ -9,13 +9,13 @@ export enum TYPES {
   AddUserToRoom = WsMsgTypes.AddUserToRoom,
 }
 
-export const create_room = (ws: ExtWebSocket) => {
+export const onCreateRoom = (ws: ExtWebSocket) => {
   const { roomId } = create();
-  add_user_to_room(ws.playerId, roomId);
+  onAddUserToRoom(ws.playerId, roomId);
 
   console.log(`Player ${ws.playerId} added to new room with id ${roomId}`);
 };
-export const add_user_to_room = (index: number, indexRoom: number) => {
+export const onAddUserToRoom = (index: number, indexRoom: number) => {
   const room = add_player(get(index), indexRoom);
 
   if (room.roomUsers.length === 2) {
@@ -29,11 +29,11 @@ export const add_user_to_room = (index: number, indexRoom: number) => {
     });
   }
 
-  update_room();
+  onUpdateRoom();
   console.log(`Player ${index} added to room ${indexRoom}, rooms updated`);
 };
 
-export const update_room = () =>
+export const onUpdateRoom = () =>
   allPlayers().forEach((player) =>
     sendWsMessage(player.ws, WsMsgTypes.UpdateRoom, all()),
   );

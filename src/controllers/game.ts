@@ -10,7 +10,7 @@ import {
 } from "../models/game";
 import { get as getPlayer } from "../models/player";
 import { WsMsgTypes, sendWsMessage } from "../utils/networkHelpers";
-import { update_winners } from "./player";
+import { onUpdateWinners } from "./player";
 
 export enum TYPES {
   AddShips = "add_ships",
@@ -18,7 +18,7 @@ export enum TYPES {
   RandomAttack = WsMsgTypes.RandomAttack,
 }
 
-export const add_ships = (data: {
+export const onAddShips = (data: {
   gameId: number;
   indexPlayer: number;
   ships: [];
@@ -39,13 +39,13 @@ export const add_ships = (data: {
 
     console.log(`Game ${data.gameId} started`);
 
-    turn(game.id);
+    onTurn(game.id);
   }
 
   console.log(`Player ${data.indexPlayer} added ships to game ${data.gameId}`);
 };
 
-export const turn = (gameId: number) => {
+export const onTurn = (gameId: number) => {
   const { playerIds, currentPlayer } = get(gameId);
 
   playerIds.forEach((playerId) => {
@@ -103,7 +103,7 @@ export const onAttack = ({
 
     rm(gameId);
 
-    update_winners(game.currentPlayer);
+    onUpdateWinners(game.currentPlayer);
 
     console.log(`Game ${gameId} finished, player ${game.currentPlayer} win`);
 
@@ -114,7 +114,7 @@ export const onAttack = ({
     nextPlayer(gameId);
   }
 
-  turn(gameId);
+  onTurn(gameId);
 };
 
 export const onPlayerDissconect = (playerId: number) => {
@@ -122,6 +122,6 @@ export const onPlayerDissconect = (playerId: number) => {
 
   if (winPlayer) {
     sendWsMessage(getPlayer(winPlayer).ws, WsMsgTypes.Finish, { winPlayer });
-    update_winners(winPlayer);
+    onUpdateWinners(winPlayer);
   }
 };
