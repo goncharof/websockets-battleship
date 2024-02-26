@@ -179,12 +179,20 @@ const getSurroundingPointsForShip = (ship: Ship) => {
   const bowAndSternOffsets = ship.direction
     ? [
         { dx: 0, dy: -1 },
+        { dx: -1, dy: -1 },
+        { dx: 1, dy: -1 },
         { dx: 0, dy: ship.length },
-      ] // Vertical
+        { dx: -1, dy: ship.length },
+        { dx: 1, dy: ship.length },
+      ]
     : [
         { dx: -1, dy: 0 },
+        { dx: -1, dy: -1 },
+        { dx: -1, dy: 1 },
         { dx: ship.length, dy: 0 },
-      ]; // Horizontal
+        { dx: ship.length, dy: -1 },
+        { dx: ship.length, dy: 1 },
+      ];
 
   bowAndSternOffsets.forEach((offset) => {
     const bowOrSternPoint = {
