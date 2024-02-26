@@ -3,7 +3,7 @@ import { get } from "../models/player";
 import { WsMsgTypes, sendWsMessage } from "../utils/networkHelpers";
 import { onAddShips } from "./game";
 
-export const botShips = [
+const botShips = () => [
   { position: { x: 1, y: 6 }, direction: false, type: "huge", length: 4 },
   { position: { x: 8, y: 0 }, direction: true, type: "large", length: 3 },
   { position: { x: 2, y: 1 }, direction: true, type: "large", length: 3 },
@@ -28,7 +28,7 @@ export const start = (idPlayer: number) => {
   onAddShips({
     gameId: game.id,
     indexPlayer: BOT_ID,
-    ships: botShips,
+    ships: botShips(),
   });
 
   sendWsMessage(get(idPlayer).ws, WsMsgTypes.CreateGame, {
