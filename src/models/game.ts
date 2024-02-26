@@ -156,7 +156,8 @@ const getSurroundingPointsForShip = (ship: Ship) => {
         adjacentPoint.x >= 0 &&
         adjacentPoint.x < 10 &&
         adjacentPoint.y >= 0 &&
-        adjacentPoint.y < 10
+        adjacentPoint.y < 10 &&
+        !isShipCoordinate(adjacentPoint, ship)
       ) {
         if (
           !surroundingPoints.some(
@@ -213,4 +214,15 @@ const getSurroundingPointsForShip = (ship: Ship) => {
   });
 
   return surroundingPoints;
+};
+
+const isShipCoordinate = (point: Point, ship: Ship): boolean => {
+  for (let i = 0; i < ship.length; i++) {
+    const shipX = ship.position.x + (ship.direction ? 0 : i);
+    const shipY = ship.position.y + (ship.direction ? i : 0);
+    if (point.x === shipX && point.y === shipY) {
+      return true;
+    }
+  }
+  return false;
 };
