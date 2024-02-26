@@ -2,8 +2,10 @@ import {
   AttackResults,
   addShips,
   attack,
+  disconect,
   get,
   nextPlayer,
+  rm,
 } from "../models/game";
 import { get as getPlayer } from "../models/player";
 import { WsMsgTypes, sendWsMessage } from "../utils/networkHelpers";
@@ -85,14 +87,18 @@ export const onAttack = ({
     });
   });
 
-  if (results.some((result) => result.status === AttackResults.Finish)) {
+  if (!results.some((result) => result.status === AttackResults.Finish)) {
     game.playerIds.forEach((playerId) => {
       sendWsMessage(getPlayer(playerId).ws, WsMsgTypes.Finish, {
         winPlayer: game.currentPlayer,
       });
     });
 
+    rm(gameId);
+
     update_winners(game.currentPlayer);
+
+    return;
   }
 
   if (results.every((result) => result.status === AttackResults.Miss)) {
@@ -100,4 +106,13 @@ export const onAttack = ({
   }
 
   turn(gameId);
+};
+
+export const onPlayerDissconect = (playerId: number) => {
+  const winPlayer = disconect(playerId);
+
+  if (winPlayer) {
+    sendWsMessage(getPlayer(winPlayer).ws, WsMsgTypes.Finish, { winPlayer });
+    update_winners(winPlayer);
+  }
 };

@@ -1,4 +1,3 @@
-import { update_room } from "../controllers/room";
 import { dbPlayer } from "../database/db";
 import { ExtWebSocket } from "../wss";
 
@@ -29,5 +28,4 @@ export const get = (id: number) => dbPlayer[id];
 
 export const rm = (id: number) => {
   delete dbPlayer[id];
-  update_room();
 };

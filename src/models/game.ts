@@ -9,6 +9,20 @@ export enum AttackResults {
   Finish = "finish",
 }
 
+export const disconect = (index: number) => {
+  let winPlayer = 0;
+
+  Object.values(dbGames).forEach((game) => {
+    if (game.playerIds.includes(index)) {
+      winPlayer = game.playerIds.find((id) => id !== index)!;
+      rm(game.id);
+      return;
+    }
+  });
+
+  return winPlayer;
+};
+
 export const create = (playerIds: number[]) => {
   const [id1, id2] = playerIds;
 
@@ -203,25 +217,6 @@ function getSurroundingPointsForShip(ship: Ship) {
   return surroundingPoints;
 }
 
-// function isShipDestroyed(ship: Ship): boolean {
-//   if (!ship.hits || ship.hits.length < ship.length) {
-//     return false;
-//   }
-
-//   // Check if all possible positions of the ship have been hit
-//   const shipPoints = new Set<string>();
-//   for (let i = 0; i < ship.length; i++) {
-//     const point = ship.direction
-//       ? `${ship.position.x}:${ship.position.y + i}`
-//       : `${ship.position.x + i}:${ship.position.y}`;
-//     shipPoints.add(point);
-//   }
-
-//   // Check if all points are in the hits array
-//   for (const hit of ship.hits) {
-//     shipPoints.delete(`${hit.x}:${hit.y}`);
-//   }
-
-//   // If all points are hit, shipPoints set should be empty
-//   return shipPoints.size === 0;
-// }
+export const rm = (id: number) => {
+  delete dbGames[id];
+};

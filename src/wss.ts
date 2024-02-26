@@ -1,5 +1,5 @@
 import { WebSocketServer, type WebSocket } from "ws";
-import { reg, TYPES as PlayerTypes } from "./controllers/player";
+import { reg, TYPES as PlayerTypes, onDisconnect } from "./controllers/player";
 import { TYPES as GameTypes, add_ships, onAttack } from "./controllers/game";
 import {
   TYPES as RoomTypes,
@@ -55,6 +55,8 @@ wss.on("connection", (ws: ExtWebSocket) => {
         console.log(`Unknown command type: ${data.type}`);
     }
   });
+
+  ws.on("close", () => onDisconnect(ws.playerId));
 });
 
 console.log("WebSocket server is running on ws://localhost:3000");

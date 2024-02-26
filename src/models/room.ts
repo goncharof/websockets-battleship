@@ -42,3 +42,9 @@ export const all = () => {
 
   return Object.values(dbRoom).filter((room) => room.roomUsers.length === 1);
 };
+
+export const disconect = (index: number) => {
+  Object.values(dbRoom).forEach((room) => {
+    room.roomUsers = room.roomUsers.filter((user) => user.index !== index);
+  });
+};

@@ -1,5 +1,7 @@
 export const cmdTypes = ["reg"];
-import { save, all } from "../models/player";
+import { save, all, rm } from "../models/player";
+import { disconect as disconectFromRooms } from "../models/room";
+import { onPlayerDissconect as onDisconnectFromGames } from "../controllers/game";
 import { WsMsgTypes, sendWsMessage } from "../utils/networkHelpers";
 import { ExtWebSocket } from "../wss";
 import { update_room } from "./room";
@@ -50,3 +52,12 @@ export const update_winners = (winnerId?: number) => {
     );
   });
 };
+
+export function onDisconnect(playerId?: number) {
+  if (!playerId) return;
+  rm(playerId);
+  disconectFromRooms(playerId);
+  onDisconnectFromGames(playerId);
+  update_room();
+  update_winners();
+}
