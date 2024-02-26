@@ -7,6 +7,7 @@ import {
 } from "../models/game";
 import { get as getPlayer } from "../models/player";
 import { WsMsgTypes, sendWsMessage } from "../utils/networkHelpers";
+import { update_winners } from "./player";
 
 export enum TYPES {
   AddShips = "add_ships",
@@ -85,9 +86,13 @@ export const onAttack = ({
   });
 
   if (results.some((result) => result.status === AttackResults.Finish)) {
-    sendWsMessage(getPlayer(game.currentPlayer).ws, WsMsgTypes.Finish, {
-      winPlayer: game.currentPlayer,
+    game.playerIds.forEach((playerId) => {
+      sendWsMessage(getPlayer(playerId).ws, WsMsgTypes.Finish, {
+        winPlayer: game.currentPlayer,
+      });
     });
+
+    update_winners(game.currentPlayer);
   }
 
   if (results.every((result) => result.status === AttackResults.Miss)) {

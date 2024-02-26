@@ -6,11 +6,16 @@ export interface Player {
   index: number;
   name: string;
   ws: ExtWebSocket;
+  wins: number;
 }
 
 let id = 0;
 
-export const save = (data: { name: string; ws: ExtWebSocket }) => {
+export const save = (data: {
+  name: string;
+  ws: ExtWebSocket;
+  wins: number;
+}) => {
   return (dbPlayer[++id] = { ...data, index: id });
 };
 
