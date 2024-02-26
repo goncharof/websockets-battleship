@@ -96,7 +96,9 @@ const attackResult = (ships: Ship[], x: number, y: number) => {
         if (!ship.hits) {
           ship.hits = [];
         }
-        ship.hits.push({ x, y });
+
+        if (!ship.hits.some((hit) => hit.x === x && hit.y === y))
+          ship.hits.push({ x, y });
 
         if (ship.hits.length === length) {
           if (ships.every((ship) => ship.hits?.length === ship.length)) {
