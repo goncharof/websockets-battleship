@@ -40,24 +40,23 @@ export const attack = (
 ) => {
   const opponentId = dbGames[gameId].playerIds.find((id) => id !== playerId)!;
 
-  const results = attackResult(
-    dbGames[gameId].ships[opponentId], x, y);
+  const results = attackResult(dbGames[gameId].ships[opponentId], x, y);
 
-  results.forEach(result => {
-    dbGames[gameId].attacks[playerId].push(result.point);  
+  results.forEach((result) => {
+    dbGames[gameId].attacks[playerId].push(result.point);
   });
 
-  return results
+  return results;
 };
 
 export const nextPlayer = (gameId: number) => {
   const game = get(gameId);
   dbGames[id].currentPlayer = game.playerIds.find(
     (id) => id !== game.currentPlayer,
-  )!
+  )!;
 
-  return game.currentPlayer
-}
+  return game.currentPlayer;
+};
 
 const attackResult = (ships: Ship[], shotX: number, shotY: number) => {
   for (let i = 0; i < ships.length; i++) {
@@ -81,11 +80,10 @@ const attackResult = (ships: Ship[], shotX: number, shotY: number) => {
         ship.hits.push({ x: shotX, y: shotY });
 
         if (ship.hits.length === length) {
-
-          if(ships.every((ship) => ship.hits?.length === ship.length)) {
+          if (ships.every((ship) => ship.hits?.length === ship.length)) {
             console.log("all ships are destroyed");
           }
-        
+
           return [
             { status: AttackResults.Killed, point: { x: shotX, y: shotY } },
             ...getSurroundingPointsForShip(ship),
@@ -111,7 +109,10 @@ const attackResult = (ships: Ship[], shotX: number, shotY: number) => {
 };
 
 function getSurroundingPointsForShip(ship: Ship) {
-  const surroundingPoints: { status: AttackResults.Miss; point: { x: number; y: number }; }[] = [];
+  const surroundingPoints: {
+    status: AttackResults.Miss;
+    point: { x: number; y: number };
+  }[] = [];
 
   // Define horizontal and vertical offsets for adjacent points
   const adjacentOffsets = [
@@ -131,10 +132,24 @@ function getSurroundingPointsForShip(ship: Ship) {
     adjacentOffsets.forEach((offset) => {
       const adjacentPoint = { x: posX + offset.dx, y: posY + offset.dy };
       // Check if the adjacent point is inside the board boundaries
-      if (adjacentPoint.x >= 0 && adjacentPoint.x < 10 && adjacentPoint.y >= 0 && adjacentPoint.y < 10) {
+      if (
+        adjacentPoint.x >= 0 &&
+        adjacentPoint.x < 10 &&
+        adjacentPoint.y >= 0 &&
+        adjacentPoint.y < 10
+      ) {
         // Prevent duplicates by checking if the point is already in the array
-        if (!surroundingPoints.some(point => point.point.x === adjacentPoint.x && point.point.y === adjacentPoint.y)) {
-          surroundingPoints.push({ status: AttackResults.Miss, point: adjacentPoint });
+        if (
+          !surroundingPoints.some(
+            (point) =>
+              point.point.x === adjacentPoint.x &&
+              point.point.y === adjacentPoint.y,
+          )
+        ) {
+          surroundingPoints.push({
+            status: AttackResults.Miss,
+            point: adjacentPoint,
+          });
         }
       }
     });
@@ -142,16 +157,39 @@ function getSurroundingPointsForShip(ship: Ship) {
 
   // Get the bow and stern positions for the adjacent points
   const bowAndSternOffsets = ship.direction
-    ? [{ dx: 0, dy: -1 }, { dx: 0, dy: ship.length }] // Vertical
-    : [{ dx: -1, dy: 0 }, { dx: ship.length, dy: 0 }]; // Horizontal
+    ? [
+        { dx: 0, dy: -1 },
+        { dx: 0, dy: ship.length },
+      ] // Vertical
+    : [
+        { dx: -1, dy: 0 },
+        { dx: ship.length, dy: 0 },
+      ]; // Horizontal
 
   bowAndSternOffsets.forEach((offset) => {
-    const bowOrSternPoint = { x: ship.position.x + offset.dx, y: ship.position.y + offset.dy };
+    const bowOrSternPoint = {
+      x: ship.position.x + offset.dx,
+      y: ship.position.y + offset.dy,
+    };
     // Check if the point is inside the board boundaries
-    if (bowOrSternPoint.x >= 0 && bowOrSternPoint.x < 10 && bowOrSternPoint.y >= 0 && bowOrSternPoint.y < 10) {
+    if (
+      bowOrSternPoint.x >= 0 &&
+      bowOrSternPoint.x < 10 &&
+      bowOrSternPoint.y >= 0 &&
+      bowOrSternPoint.y < 10
+    ) {
       // Prevent duplicates by checking if the point is already in the array
-      if (!surroundingPoints.some(point => point.point.x === bowOrSternPoint.x && point.point.y === bowOrSternPoint.y)) {
-        surroundingPoints.push({ status: AttackResults.Miss, point: bowOrSternPoint });
+      if (
+        !surroundingPoints.some(
+          (point) =>
+            point.point.x === bowOrSternPoint.x &&
+            point.point.y === bowOrSternPoint.y,
+        )
+      ) {
+        surroundingPoints.push({
+          status: AttackResults.Miss,
+          point: bowOrSternPoint,
+        });
       }
     }
   });

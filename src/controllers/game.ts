@@ -1,4 +1,10 @@
-import { AttackResults, addShips, attack, get, nextPlayer } from "../models/game";
+import {
+  AttackResults,
+  addShips,
+  attack,
+  get,
+  nextPlayer,
+} from "../models/game";
 import { get as getPlayer } from "../models/player";
 import { WsMsgTypes, sendWsMessage } from "../utils/networkHelpers";
 
@@ -70,8 +76,8 @@ export const onAttack = ({
 
   results.forEach((result) => {
     game.playerIds.forEach((playerId) => {
-      console.log('currentplayerId!!!!!', game.currentPlayer);
-      
+      console.log("currentplayerId!!!!!", game.currentPlayer);
+
       sendWsMessage(getPlayer(playerId).ws, WsMsgTypes.Attack, {
         position: result.point,
         status: result.status,
@@ -80,13 +86,11 @@ export const onAttack = ({
     });
   });
 
-  console.log(results, 'results');
+  console.log(results, "results");
   console.log(results.some((result) => result.status !== AttackResults.Miss));
-  
-  
 
-  if(results.every((result) => result.status === AttackResults.Miss)) {
-    nextPlayer(gameId);  
+  if (results.every((result) => result.status === AttackResults.Miss)) {
+    nextPlayer(gameId);
   }
 
   turn(gameId);
