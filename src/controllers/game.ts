@@ -37,7 +37,7 @@ export const onAddShips = (data: {
         getPlayer(Number.parseInt(playerId)).ws,
         WsMsgTypes.StartGame,
         {
-          ships: data.ships,
+          ships: game.ships[Number.parseInt(playerId)],
           currentPlayerIndex: Number.parseInt(playerId),
         },
       );
