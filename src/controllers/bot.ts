@@ -16,7 +16,7 @@ export const botShips = [
   { position: { x: 8, y: 5 }, direction: false, type: "small", length: 1 },
 ];
 
-const BOT_ID = -1;
+export const BOT_ID = -1;
 
 export enum TYPES {
   SinglePlay = "single_play",
@@ -27,7 +27,7 @@ export const start = (idPlayer: number) => {
 
   onAddShips({
     gameId: game.id,
-    indexPlayer: -1,
+    indexPlayer: BOT_ID,
     ships: botShips,
   });
 

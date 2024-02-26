@@ -1,3 +1,4 @@
+import { BOT_ID } from "../controllers/bot";
 import { type Player } from "../models/player";
 import { Room } from "../models/room";
 import { ExtWebSocket } from "../wss";
@@ -15,8 +16,8 @@ export interface Ship {
 }
 
 export const dbPlayer: Record<number, Player> = {
-  "-1": {
-    index: -1,
+  [BOT_ID]: {
+    index: BOT_ID,
     name: "bot",
     ws: { send: () => {} } as unknown as ExtWebSocket,
     wins: 0,

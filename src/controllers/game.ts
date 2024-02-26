@@ -10,6 +10,7 @@ import {
 } from "../models/game";
 import { get as getPlayer } from "../models/player";
 import { WsMsgTypes, sendWsMessage } from "../utils/networkHelpers";
+import { BOT_ID } from "./bot";
 import { onUpdateWinners } from "./player";
 
 export enum TYPES {
@@ -59,9 +60,9 @@ export const onTurn = (gameId: number) => {
 
   console.log(`Player ${currentPlayer} turn`);
 
-  if (currentPlayer == -1) {
+  if (currentPlayer == BOT_ID) {
     setTimeout(() => {
-      onAttack({ gameId, indexPlayer: -1 });
+      onAttack({ gameId, indexPlayer: BOT_ID });
     }, 1000);
   }
 };
@@ -133,6 +134,6 @@ export const onPlayerDissconect = (playerId: number) => {
 
   if (winPlayer) {
     sendWsMessage(getPlayer(winPlayer).ws, WsMsgTypes.Finish, { winPlayer });
-    onUpdateWinners(winPlayer);
+    onUpdateWinners(winPlayer === BOT_ID ? undefined : winPlayer);
   }
 };
