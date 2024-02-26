@@ -1,4 +1,4 @@
-import { WebSocketServer, type WebSocket } from "ws";
+import { WebSocketServer, WebSocket } from "ws";
 import { reg, TYPES as PlayerTypes, onDisconnect } from "./controllers/player";
 import { TYPES as GameTypes, add_ships, onAttack } from "./controllers/game";
 import {
@@ -60,5 +60,19 @@ wss.on("connection", (ws: ExtWebSocket) => {
   ws.on("close", () => onDisconnect(ws.playerId));
 });
 
+process.on("exit", (code) => {
+  console.log("Process beforeExit event with code: ", code);
+  console.log("Closing connections...");
+  closeConnections();
+});
+
 const unknownCommandDetected = (type: string) =>
   console.log(`Unknown command type: ${type}`);
+
+const closeConnections = () =>
+  wss.clients.forEach((ws) => {
+    if (ws.readyState === WebSocket.OPEN) {
+      ws.close(1001, "server closed connection");
+      console.log("Connection closed");
+    }
+  });
