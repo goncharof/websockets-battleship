@@ -49,7 +49,9 @@ export const onUpdateWinners = (winnerId?: number) => {
     sendWsMessage(
       player.ws,
       WsMsgTypes.UpdateWinners,
-      players.map(({ name, wins }) => ({ name, wins })),
+      players
+        .map(({ name, wins }) => ({ name, wins }))
+        .sort((a, b) => b.wins - a.wins),
     );
   });
 };
