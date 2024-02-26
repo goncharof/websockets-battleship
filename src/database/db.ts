@@ -1,20 +1,19 @@
 import { type Player } from "../models/player";
 import { Room } from "../models/room";
 
-interface Winner {
-  name: string;
-  wins: number;
+export interface Point {
+  x: number;
+  y: number;
 }
 
 export interface Ship {
-  position: { x: number; y: number };
+  position: Point;
   direction: boolean;
   length: number;
-  hits?: { x: number; y: number }[];
+  hits?: Point[];
 }
 
 export const dbPlayer: Record<number, Player> = {};
-export const winnersDb: Winner[] = [];
 export const dbRoom: Record<number, Room> = {};
 export const dbGames: Record<
   number,
@@ -29,7 +28,6 @@ export const dbGames: Record<
 
 export default {
   dbPlayer,
-  winnersDb,
   dbGames,
   dbRoom,
 };

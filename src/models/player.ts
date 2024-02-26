@@ -26,6 +26,4 @@ export const all = () => Object.values(dbPlayer);
 
 export const get = (id: number) => dbPlayer[id];
 
-export const rm = (id: number) => {
-  delete dbPlayer[id];
-};
+export const rm = (id: number) => delete dbPlayer[id];

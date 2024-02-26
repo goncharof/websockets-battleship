@@ -1,4 +1,4 @@
-import { Ship, dbGames } from "../database/db";
+import { Point, Ship, dbGames } from "../database/db";
 
 let id = 0;
 
@@ -73,7 +73,11 @@ export const nextPlayer = (gameId: number) => {
   return game.currentPlayer;
 };
 
-const attackResult = (ships: Ship[], shotX: number, shotY: number) => {
+export const rm = (id: number) => {
+  delete dbGames[id];
+};
+
+const attackResult = (ships: Ship[], x: number, y: number) => {
   for (let i = 0; i < ships.length; i++) {
     const ship = ships[i];
     const { position, direction, length } = ship;
@@ -88,31 +92,29 @@ const attackResult = (ships: Ship[], shotX: number, shotY: number) => {
     }
 
     for (const coord of shipCoordinates) {
-      if (coord.x === shotX && coord.y === shotY) {
+      if (coord.x === x && coord.y === y) {
         if (!ship.hits) {
           ship.hits = [];
         }
-        ship.hits.push({ x: shotX, y: shotY });
+        ship.hits.push({ x, y });
 
         if (ship.hits.length === length) {
           if (ships.every((ship) => ship.hits?.length === ship.length)) {
             console.log("all ships are destroyed!!!!");
-            return [
-              { status: AttackResults.Finish, point: { x: shotX, y: shotY } },
-            ];
+            return [{ status: AttackResults.Finish, point: { x, y } }];
           } else {
             console.log("not all");
           }
 
           return [
-            { status: AttackResults.Killed, point: { x: shotX, y: shotY } },
+            { status: AttackResults.Killed, point: { x, y } },
             ...getSurroundingPointsForShip(ship),
           ];
         } else {
           return [
             {
               status: AttackResults.Shot,
-              point: { x: shotX, y: shotY },
+              point: { x, y },
             },
           ];
         }
@@ -123,18 +125,17 @@ const attackResult = (ships: Ship[], shotX: number, shotY: number) => {
   return [
     {
       status: AttackResults.Miss,
-      point: { x: shotX, y: shotY },
+      point: { x, y },
     },
   ];
 };
 
-function getSurroundingPointsForShip(ship: Ship) {
+const getSurroundingPointsForShip = (ship: Ship) => {
   const surroundingPoints: {
     status: AttackResults.Miss;
-    point: { x: number; y: number };
+    point: Point;
   }[] = [];
 
-  // Define horizontal and vertical offsets for adjacent points
   const adjacentOffsets = [
     { dx: -1, dy: 0 }, // left
     { dx: 1, dy: 0 }, // right
@@ -142,23 +143,18 @@ function getSurroundingPointsForShip(ship: Ship) {
     { dx: 0, dy: 1 }, // bottom
   ];
 
-  // Iterate over the length of the ship to get the adjacent points
   for (let i = 0; i < ship.length; i++) {
-    // Calculate the current segment position based on direction
     const posX = ship.position.x + (ship.direction ? 0 : i);
     const posY = ship.position.y + (ship.direction ? i : 0);
 
-    // Get adjacent points for the current segment
     adjacentOffsets.forEach((offset) => {
       const adjacentPoint = { x: posX + offset.dx, y: posY + offset.dy };
-      // Check if the adjacent point is inside the board boundaries
       if (
         adjacentPoint.x >= 0 &&
         adjacentPoint.x < 10 &&
         adjacentPoint.y >= 0 &&
         adjacentPoint.y < 10
       ) {
-        // Prevent duplicates by checking if the point is already in the array
         if (
           !surroundingPoints.some(
             (point) =>
@@ -175,7 +171,6 @@ function getSurroundingPointsForShip(ship: Ship) {
     });
   }
 
-  // Get the bow and stern positions for the adjacent points
   const bowAndSternOffsets = ship.direction
     ? [
         { dx: 0, dy: -1 },
@@ -191,14 +186,12 @@ function getSurroundingPointsForShip(ship: Ship) {
       x: ship.position.x + offset.dx,
       y: ship.position.y + offset.dy,
     };
-    // Check if the point is inside the board boundaries
     if (
       bowOrSternPoint.x >= 0 &&
       bowOrSternPoint.x < 10 &&
       bowOrSternPoint.y >= 0 &&
       bowOrSternPoint.y < 10
     ) {
-      // Prevent duplicates by checking if the point is already in the array
       if (
         !surroundingPoints.some(
           (point) =>
@@ -215,8 +208,4 @@ function getSurroundingPointsForShip(ship: Ship) {
   });
 
   return surroundingPoints;
-}
-
-export const rm = (id: number) => {
-  delete dbGames[id];
 };

@@ -1,3 +1,4 @@
+import { Point } from "../database/db";
 import {
   AttackResults,
   addShips,
@@ -56,9 +57,7 @@ export const onAttack = ({
 }: {
   gameId: number;
   indexPlayer: number;
-  x?: number;
-  y?: number;
-}) => {
+} & Partial<Point>) => {
   const game = get(gameId);
 
   if (game.currentPlayer !== indexPlayer) return;

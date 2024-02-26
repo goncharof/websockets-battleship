@@ -16,10 +16,7 @@ export const wss = new WebSocketServer({ port: 3000 });
 wss.on("connection", (ws: ExtWebSocket) => {
   console.log("Client connected");
 
-  // Listen for messages from clients
-  ws.on("message", function incoming(message: string) {
-    // console.log("received: %s", message);
-
+  ws.on("message", (message: string) => {
     const data: { type: string; data: string } = JSON.parse(message);
 
     switch (true) {

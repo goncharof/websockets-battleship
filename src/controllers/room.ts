@@ -30,8 +30,7 @@ export const add_user_to_room = (index: number, indexRoom: number) => {
   update_room();
 };
 
-export const update_room = () => {
+export const update_room = () =>
   allPlayers().forEach((player) =>
     sendWsMessage(player.ws, WsMsgTypes.UpdateRoom, all()),
   );
-};

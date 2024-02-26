@@ -40,9 +40,7 @@ export const reg = (
 export const update_winners = (winnerId?: number) => {
   const players = all();
 
-  if (winnerId) {
-    players.find((player) => player.index === winnerId)!.wins++;
-  }
+  if (winnerId) players.find((player) => player.index === winnerId)!.wins++;
 
   players.forEach((player) => {
     sendWsMessage(
@@ -53,11 +51,11 @@ export const update_winners = (winnerId?: number) => {
   });
 };
 
-export function onDisconnect(playerId?: number) {
+export const onDisconnect = (playerId?: number) => {
   if (!playerId) return;
   rm(playerId);
   disconectFromRooms(playerId);
   onDisconnectFromGames(playerId);
   update_room();
   update_winners();
-}
+};
