@@ -26,6 +26,8 @@ wss.on("connection", (ws: ExtWebSocket) => {
   console.log("Client connected");
 
   ws.on("message", (message: string) => {
+    console.log(`server received message: \x1b[32m${message}\x1b[0m`);
+
     const data: { type: string; data: string } = JSON.parse(message);
 
     console.log(`server received command with type: ${data.type}`);

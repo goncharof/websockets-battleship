@@ -19,6 +19,10 @@ export const sendWsMessage = (
   type: WsMsgTypes,
   data: object,
 ) => {
+  console.log(
+    `Send message to client \x1b[32m${ws.playerId}\x1b[0m: \x1b[32m${type}\x1b[0m with data: \x1b[32m${JSON.stringify(data)}\x1b[0m`,
+  );
+
   ws.send(
     JSON.stringify({
       type,
