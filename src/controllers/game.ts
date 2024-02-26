@@ -76,8 +76,6 @@ export const onAttack = ({
 
   results.forEach((result) => {
     game.playerIds.forEach((playerId) => {
-      console.log("currentplayerId!!!!!", game.currentPlayer);
-
       sendWsMessage(getPlayer(playerId).ws, WsMsgTypes.Attack, {
         position: result.point,
         status: result.status,
@@ -86,8 +84,11 @@ export const onAttack = ({
     });
   });
 
-  console.log(results, "results");
-  console.log(results.some((result) => result.status !== AttackResults.Miss));
+  if (results.some((result) => result.status === AttackResults.Finish)) {
+    sendWsMessage(getPlayer(game.currentPlayer).ws, WsMsgTypes.Finish, {
+      winPlayer: game.currentPlayer,
+    });
+  }
 
   if (results.every((result) => result.status === AttackResults.Miss)) {
     nextPlayer(gameId);

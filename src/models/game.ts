@@ -6,6 +6,7 @@ export enum AttackResults {
   Miss = "miss",
   Killed = "killed",
   Shot = "shot",
+  Finish = "finish",
 }
 
 export const create = (playerIds: number[]) => {
@@ -81,7 +82,12 @@ const attackResult = (ships: Ship[], shotX: number, shotY: number) => {
 
         if (ship.hits.length === length) {
           if (ships.every((ship) => ship.hits?.length === ship.length)) {
-            console.log("all ships are destroyed");
+            console.log("all ships are destroyed!!!!");
+            return [
+              { status: AttackResults.Finish, point: { x: shotX, y: shotY } },
+            ];
+          } else {
+            console.log("not all");
           }
 
           return [
