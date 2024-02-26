@@ -12,6 +12,8 @@ export enum TYPES {
 export const create_room = (ws: ExtWebSocket) => {
   const { roomId } = create();
   add_user_to_room(ws.playerId, roomId);
+
+  console.log(`Player ${ws.playerId} added to new room with id ${roomId}`);
 };
 export const add_user_to_room = (index: number, indexRoom: number) => {
   const room = add_player(get(index), indexRoom);
@@ -28,6 +30,7 @@ export const add_user_to_room = (index: number, indexRoom: number) => {
   }
 
   update_room();
+  console.log(`Player ${index} added to room ${indexRoom}, rooms updated`);
 };
 
 export const update_room = () =>

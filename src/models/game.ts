@@ -102,8 +102,6 @@ const attackResult = (ships: Ship[], x: number, y: number) => {
           if (ships.every((ship) => ship.hits?.length === ship.length)) {
             console.log("all ships are destroyed!!!!");
             return [{ status: AttackResults.Finish, point: { x, y } }];
-          } else {
-            console.log("not all");
           }
 
           return [

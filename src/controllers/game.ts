@@ -37,8 +37,12 @@ export const add_ships = (data: {
       );
     });
 
+    console.log(`Game ${data.gameId} started`);
+
     turn(game.id);
   }
+
+  console.log(`Player ${data.indexPlayer} added ships to game ${data.gameId}`);
 };
 
 export const turn = (gameId: number) => {
@@ -47,6 +51,8 @@ export const turn = (gameId: number) => {
   playerIds.forEach((playerId) => {
     sendWsMessage(getPlayer(playerId).ws, WsMsgTypes.Turn, { currentPlayer });
   });
+
+  console.log(`Player ${currentPlayer} turn`);
 };
 
 export const onAttack = ({
@@ -61,6 +67,8 @@ export const onAttack = ({
   const game = get(gameId);
 
   if (game.currentPlayer !== indexPlayer) return;
+
+  console.log(`Player ${indexPlayer} attack ${x} ${y}`);
 
   const playerAttacks = game.attacks[indexPlayer];
 
@@ -96,6 +104,8 @@ export const onAttack = ({
     rm(gameId);
 
     update_winners(game.currentPlayer);
+
+    console.log(`Game ${gameId} finished, player ${game.currentPlayer} win`);
 
     return;
   }

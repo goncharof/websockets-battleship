@@ -23,6 +23,8 @@ wss.on("connection", (ws: ExtWebSocket) => {
   ws.on("message", (message: string) => {
     const data: { type: string; data: string } = JSON.parse(message);
 
+    console.log(`server received command with type: ${data.type}`);
+
     switch (true) {
       case (Object.values(PlayerTypes) as string[]).includes(data.type):
         reg(ws, JSON.parse(data.data));

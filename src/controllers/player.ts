@@ -27,6 +27,8 @@ export const reg = (
     });
 
     update_room();
+
+    console.log(`Player ${player.name} registrated and rooms updated`);
   } catch (error: unknown) {
     sendWsMessage(ws, WsMsgTypes.Reg, {
       name: "",
@@ -34,6 +36,8 @@ export const reg = (
       error: true,
       errorText: (error as Error).message,
     });
+
+    console.log((error as Error).message);
   }
 };
 
