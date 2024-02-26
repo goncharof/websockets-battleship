@@ -107,7 +107,11 @@ const attackResult = (ships: Ship[], x: number, y: number) => {
           }
 
           return [
-            { status: AttackResults.Killed, point: { x, y }, finish: false },
+            ...getShipCoordinates(ship).map(({ x, y }) => ({
+              status: AttackResults.Killed,
+              point: { x, y },
+              finish: false,
+            })),
             ...getSurroundingPointsForShip(ship),
           ];
         } else {
@@ -233,4 +237,16 @@ const isShipCoordinate = (point: Point, ship: Ship): boolean => {
     }
   }
   return false;
+};
+
+const getShipCoordinates = (ship: Ship): Point[] => {
+  const coordinates: Point[] = [];
+  for (let i = 0; i < ship.length; i++) {
+    if (ship.direction) {
+      coordinates.push({ x: ship.position.x, y: ship.position.y + i });
+    } else {
+      coordinates.push({ x: ship.position.x + i, y: ship.position.y });
+    }
+  }
+  return coordinates;
 };
